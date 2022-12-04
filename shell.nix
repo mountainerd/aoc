@@ -7,6 +7,15 @@
       GIT_COMMITTER_EMAIL = "jwblair@gmail.com";
       # Development
       nativeBuildInputs = with pkgs; [
+	 delve
          go
+         gotools
+         gopls
+         go-outline
+         gocode
+         gopkgs
+         gocode-gomod
+         godef
+         golint
       ];
    }

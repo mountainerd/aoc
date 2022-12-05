@@ -11,7 +11,7 @@ import (
 var testfs embed.FS
 
 // TestDayOne returns the elf carrying the most calories.
-func TestDayOne(t *testing.T) {
+func TestPartOne(t *testing.T) {
 	tests := []struct {
 		name      string
 		test_file string
@@ -34,13 +34,13 @@ func TestDayOne(t *testing.T) {
 			data, _ := testfs.ReadFile("test_inputs/" + test.test_file)
 			d1.ElvenCalories = string(data)
 			if got := d1.PartOne(); got != test.want {
-				t.Errorf("DayOne() = %v, want %v", got, test.want)
+				t.Errorf("PartOne() = %v, want %v", got, test.want)
 			}
 		})
 	}
 }
 
-func TestDayTwo(t *testing.T) {
+func TestPartTwo(t *testing.T) {
 	tests := []struct {
 		name      string
 		test_file string
@@ -63,7 +63,7 @@ func TestDayTwo(t *testing.T) {
 			data, _ := testfs.ReadFile("test_inputs/" + test.test_file)
 			d1.ElvenCalories = string(data)
 			if got := d1.PartTwo(); got != test.want {
-				t.Errorf("DayTwo() = %v, want %v", got, test.want)
+				t.Errorf("PartTwo() = %v, want %v", got, test.want)
 			}
 		})
 	}

@@ -28,6 +28,7 @@ func init() {
 type Siglocs struct {
 	left, right []int
 	input       string
+	similarity  map[int]int
 }
 
 // ReadInput takes the values from the provided file and reads them into the appropriate slice.
@@ -58,6 +59,8 @@ func (s *Siglocs) ReadInput() bool {
 
 		s.left = append(s.left, leftValue)
 		s.right = append(s.right, rightValue)
+
+		s.similarity[rightValue] += 1
 	}
 
 	return true
@@ -71,11 +74,7 @@ func (s *Siglocs) SortLists() bool {
 	return slices.IsSorted(s.left) && slices.IsSorted(s.right)
 }
 
-// NewSiglocs simply returns an object with the inputPath set.
-func NewSiglocs() Siglocs {
-	return Siglocs{input: inputPath}
-}
-
+// ComputeDistance just gets the absolute value between the two integers and adds them to the calculation.
 func (s *Siglocs) ComputeDistance() int {
 	var totalDistance int
 
@@ -86,6 +85,29 @@ func (s *Siglocs) ComputeDistance() int {
 	return totalDistance
 }
 
+// CalculateSimilarity ranges through the left list to see how often it occurs on the right, multiplies, and adds that
+// to the overall tabulation.
+func (s *Siglocs) CalculateSimilarity() int {
+	var score int
+
+	for _, value := range s.left {
+		score += value * s.similarity[value]
+	}
+
+	return score
+}
+
+// NewSiglocs simply returns an object with the inputPath set.
+func NewSiglocs() Siglocs {
+	s := Siglocs{}
+
+	s.input = inputPath
+	s.similarity = make(map[int]int)
+
+	return s
+}
+
+// absDiff implements a rudimentary absolute value function but for integers, not floats.
 func absDiff(x, y int) int {
 	if x < y {
 		return y - x
@@ -111,6 +133,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// now we compute the distance and print.
-	fmt.Println(s.ComputeDistance())
+	// now we compute the distance, similarity, and print.
+	fmt.Println("distance:", s.ComputeDistance())
+	fmt.Println("similarity:", s.CalculateSimilarity())
 }

@@ -8,6 +8,15 @@ import (
 	"strings"
 )
 
+// yolo
+func init() {
+	_, exists := os.LookupEnv("AOC_FILE")
+	if !exists {
+		slog.Error("AOC_FILE environment variable not set")
+		os.Exit(1)
+	}
+}
+
 // AbsDiff implements a rudimentary absolute value function but for integers, not floats.
 func AbsDiff[N int | float64](x, y N) N {
 	if x < y {

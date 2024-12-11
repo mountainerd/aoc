@@ -92,7 +92,6 @@ func problemDampener(report []int, index int) bool {
 
 	// calculate
 	if index == 0 {
-		//updatedReport = report[1:]
 		updatedReport = updatedReport[1:]
 	} else if index == len(report)-1 {
 		//updatedReport = report[:index]

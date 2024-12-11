@@ -1,38 +1,46 @@
 package main
 
-import "github.com/mountainerd/aoc/2024/utils"
+import (
+	"github.com/mountainerd/aoc/2024/utils"
+	"slices"
+)
 
 func ReportProcessor(reports [][]int) [][]int {
+	// base case
 	if len(reports) == 0 {
 		return [][]int{}
 	}
 
 	// make us some channels to do work in parallel
 	diffIsBad := make(chan bool, 1)
-	directionIsBad := make(chan bool, 1)
+	dirIsBad := make(chan bool, 1)
 
 	// go func diff
 	go func() {
-		diffIsBad <- differentialCheck(reports[0])
+		diffIsBad <- differentialIsBad(reports[0])
 	}()
 
 	// go func dir
 	go func() {
-		directionIsBad <- directionalCheck(reports[0])
+		dirIsBad <- directionIsBad(reports[0])
 	}()
 
-	switch {
-	case !<-diffIsBad && !<-directionIsBad: // so we're checking here that BOTH are not bad (aka good)
-		return append([][]int{reports[0]}, ReportProcessor(reports[1:])...)
-	default:
-		return ReportProcessor(reports[1:])
+	diffBad, dirBad := <-diffIsBad, <-dirIsBad
+
+	if diffBad || dirBad {
+		if isDampened := problemDampener(reports[0], 0); !isDampened {
+			return ReportProcessor(reports[1:])
+		}
 	}
+
+	// good response
+	return append([][]int{reports[0]}, ReportProcessor(reports[1:])...)
 }
 
 // checks the absolute differential between values to ensure they are within 1 and 3.
 // returns true if bad
 // returns false/default if there are no problems
-func differentialCheck(report []int) bool {
+func differentialIsBad(report []int) bool {
 	// base case
 	if len(report) == 1 {
 		return false
@@ -48,13 +56,13 @@ func differentialCheck(report []int) bool {
 	}
 
 	// good response
-	return differentialCheck(report[1:])
+	return differentialIsBad(report[1:])
 }
 
 // checks the slice to ensure the values are all moving in the same direction
 // returns true if bad
 // returns false/default if there are no problems
-func directionalCheck(report []int) bool {
+func directionIsBad(report []int) bool {
 	// base case
 	if len(report) == 2 {
 		return false
@@ -70,5 +78,36 @@ func directionalCheck(report []int) bool {
 	}
 
 	// good response
-	return directionalCheck(report[1:])
+	return directionIsBad(report[1:])
+}
+
+func problemDampener(report []int, index int) bool {
+	updatedReport := make([]int, len(report))
+	copy(updatedReport, report)
+
+	// base case
+	if index >= len(report) {
+		return false
+	}
+
+	// calculate
+	if index == 0 {
+		//updatedReport = report[1:]
+		updatedReport = updatedReport[1:]
+	} else if index == len(report)-1 {
+		//updatedReport = report[:index]
+		updatedReport = updatedReport[:index]
+	} else {
+		updatedReport = slices.Delete(updatedReport, index, index+1)
+	}
+
+	diffIsBad := differentialIsBad(updatedReport)
+	dirIsBad := directionIsBad(updatedReport)
+
+	// test
+	if !diffIsBad && !dirIsBad {
+		return true
+	}
+
+	return problemDampener(report, index+1)
 }

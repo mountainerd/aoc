@@ -94,7 +94,6 @@ func problemDampener(report []int, index int) bool {
 	if index == 0 {
 		updatedReport = updatedReport[1:]
 	} else if index == len(report)-1 {
-		//updatedReport = report[:index]
 		updatedReport = updatedReport[:index]
 	} else {
 		updatedReport = slices.Delete(updatedReport, index, index+1)
